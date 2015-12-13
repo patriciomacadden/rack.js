@@ -5,18 +5,14 @@
     methodSelectors: 'a[data-method]',
 
     confirmHandler: function(event) {
+      event.preventDefault();
+
       answer = confirm(this.dataset.confirm);
       hasMethod = this.dataset.method != undefined;
 
       this.dataset.answer = answer;
 
-      if (answer && !hasMethod) {
-        return true;
-      } else {
-        event.stopPropagation();
-        event.preventDefault();
-        return false;
-      }
+      return answer && !hasMethod;
     },
 
     methodHandler: function(event) {
@@ -27,7 +23,16 @@
       form.method = 'POST';
       form.target = this.target || '_self';
 
-      form.innerHTML = '<input type="hidden" name="_method" value="' + this.dataset.method + '"/>'
+      hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = '_method';
+      hidden.value = this.dataset.method;
+      form.appendChild(hidden);
+
+      submit = document.createElement('input');
+      submit.type = 'submit';
+
+      document.body.appendChild(form);
 
       if (this.dataset.confirm != undefined) {
         if (this.dataset.answer == "true") {
